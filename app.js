@@ -10,7 +10,8 @@ require('dotenv').config()
 
 
 // ROUTER:
-
+// Import route for user
+const userRoutes = require('./routes/user')
 
 
 // CONNECTION TO MONGODB with dotenv 
@@ -46,7 +47,8 @@ app.use((req, res, next) => {
 // Intersect requests that have JSON in the body object & parse it on req.body
 app.use(express.json())
 
-
+// Auth user
+app.use('/api/auth', userRoutes)
 
 
 
