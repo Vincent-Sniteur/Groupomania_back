@@ -7,7 +7,7 @@ const router = express.Router()
 const userCtrl = require('../controllers/user')
 
 // Route for user Register
-router.post('/register', userCtrl.signup)
+router.post('/register', userCtrl.register)
 // Route for user Login
 router.post('/login', userCtrl.login)
 

@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken')
 
 
 // Singnup export (create user + hash password)
-exports.signup = (req, res, next) => {
+exports.register = (req, res, next) => {
     bcrypt.hash(req.body.password, 10) // 10 = Number of times the password is hashed
         .then(hash => { // Create new user & hash password
             const user = new User({
@@ -17,7 +17,27 @@ exports.signup = (req, res, next) => {
                 password: hash
             })
             user.save() // Save user in database
-                .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+                .then(() => res.status(201).json({
+                    message: 'Utilisateur créé !',
+                    userId : user._id,
+                    token : jwt.sign(
+                        { userId: user._id },
+                        'RANDOM_TOKEN_SECRET',
+                        { expiresIn: '24h' }), // Create token with userId and expires in 24h
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        bio: user.bio,
+                        avatar: user.avatar,
+                        location: user.location,
+                        numberOfPosts: user.numberOfPosts,
+                        numberOfLikes: user.numberOfLikes,
+                        numberOfLikesReceived: user.numberOfLikesReceived,
+                        isAdmin: user.isAdmin,
+                        isBanned: user.isBanned,
+                        status: user.status,
+                        messages: user.messages
+                }))
                 .catch(error => res.status(400).json({ error }))
         })
         .catch(error => res.status(500).json({ error }))
@@ -41,7 +61,20 @@ exports.login = (req, res, next) => {
                         token: jwt.sign(
                             { userId: user._id },
                             'RANDOM_TOKEN_SECRET',
-                            { expiresIn: '24h' }) // Create token with userId and expires in 24h
+                            { expiresIn: '24h' }), // Create token with userId and expires in 24h
+                        username: user.username,
+                        email: user.email,
+                        role: user.role,
+                        bio: user.bio,
+                        avatar: user.avatar,
+                        location: user.location,
+                        numberOfPosts: user.numberOfPosts,
+                        numberOfLikes: user.numberOfLikes,
+                        numberOfLikesReceived: user.numberOfLikesReceived,
+                        isAdmin: user.isAdmin,
+                        isBanned: user.isBanned,
+                        status: user.status,
+                        messages: user.messages
                     })
                 })
                 .catch(error => res.status(500).json({ error }))

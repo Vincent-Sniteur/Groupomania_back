@@ -1,3 +1,6 @@
+// Import dotenv config for port security
+require('dotenv').config()
+
 // Require the http module
 const http = require('http')
 

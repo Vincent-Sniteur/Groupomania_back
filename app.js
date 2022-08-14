@@ -48,7 +48,8 @@ app.use((req, res, next) => {
 app.use(express.json())
 
 // Auth user
-app.use('/api/auth', userRoutes)
+// app.use('/', helloWorld)
+app.use('/auth', userRoutes)
 
 
 
