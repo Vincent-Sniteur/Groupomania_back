@@ -12,7 +12,10 @@ require('dotenv').config()
 // ROUTER:
 // Import route for user
 const userRoutes = require('./routes/user')
-
+// Import route for message
+const messageRoutes = require('./routes/message')
+// Import for multer img
+const path = require('path')
 
 // CONNECTION TO MONGODB with dotenv 
 mongoose.connect(
@@ -50,6 +53,12 @@ app.use(express.json())
 // Auth user
 // app.use('/', helloWorld)
 app.use('/auth', userRoutes)
+
+// Message
+app.use('/message', messageRoutes)
+
+// Img folder
+app.use('/images', express.static(path.join(__dirname, 'images')))
 
 
 
