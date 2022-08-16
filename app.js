@@ -42,6 +42,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
     // Allow preflight requests (OPTIONS for Helmet protection)
     res.setHeader('Cross-Origin-Resource-Policy', 'same-site')
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
     next()
 })
 

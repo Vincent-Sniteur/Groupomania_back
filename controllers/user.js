@@ -25,11 +25,9 @@ exports.register = (req, res, next) => {
                         'RANDOM_TOKEN_SECRET',
                         { expiresIn: '24h' }), // Create token with userId and expires in 24h
                         username: user.username,
-                        email: user.email,
                         role: user.role,
                         bio: user.bio,
                         avatar: user.avatar,
-                        location: user.location,
                         numberOfPosts: user.numberOfPosts,
                         numberOfLikes: user.numberOfLikes,
                         numberOfLikesReceived: user.numberOfLikesReceived,
@@ -62,19 +60,17 @@ exports.login = (req, res, next) => {
                             { userId: user._id },
                             'RANDOM_TOKEN_SECRET',
                             { expiresIn: '24h' }), // Create token with userId and expires in 24h
-                        username: user.username,
-                        email: user.email,
-                        role: user.role,
-                        bio: user.bio,
-                        avatar: user.avatar,
-                        location: user.location,
-                        numberOfPosts: user.numberOfPosts,
-                        numberOfLikes: user.numberOfLikes,
-                        numberOfLikesReceived: user.numberOfLikesReceived,
-                        isAdmin: user.isAdmin,
-                        isBanned: user.isBanned,
-                        status: user.status,
-                        messages: user.messages
+                            username: user.username,
+                            role: user.role,
+                            bio: user.bio,
+                            avatar: user.avatar,
+                            numberOfPosts: user.numberOfPosts,
+                            numberOfLikes: user.numberOfLikes,
+                            numberOfLikesReceived: user.numberOfLikesReceived,
+                            isAdmin: user.isAdmin,
+                            isBanned: user.isBanned,
+                            status: user.status,
+                            messages: user.messages
                     })
                 })
                 .catch(error => res.status(500).json({ error }))
