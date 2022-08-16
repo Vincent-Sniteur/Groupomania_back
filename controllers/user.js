@@ -78,3 +78,20 @@ exports.login = (req, res, next) => {
     })
         .catch(error => res.status(500).json({ error }))
 }
+
+// Modify user information (username, bio, avatar) & return new user information
+exports.modifyUser = (req, res, next) => {
+    const userObject = req.file ?
+        {
+            ...JSON.parse(req.body.user),
+            avatar: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        } : { ...req.body }
+    User.updateOne({ _id: req.params.id }, { ...userObject, _id: req.params.id })
+        .then(() => res.status(200).json({ 
+            userId: req.params.id,
+            username: userObject.username,
+            bio: userObject.bio,
+            avatar: userObject.avatar,
+        }))
+        .catch(error => res.status(400).json({ error }))
+}
