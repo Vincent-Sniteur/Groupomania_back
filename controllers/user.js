@@ -22,7 +22,7 @@ exports.register = (req, res, next) => {
                     userId : user._id,
                     token : jwt.sign(
                         { userId: user._id },
-                        'RANDOM_TOKEN_SECRET',
+                        `${process.env.JWT_TOKEN}`,
                         { expiresIn: '24h' }), // Create token with userId and expires in 24h
                         username: user.username,
                         role: user.role,
@@ -58,7 +58,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            'RANDOM_TOKEN_SECRET',
+                            `${process.env.JWT_TOKEN}`,
                             { expiresIn: '24h' }), // Create token with userId and expires in 24h
                             username: user.username,
                             role: user.role,
@@ -79,7 +79,7 @@ exports.login = (req, res, next) => {
         .catch(error => res.status(500).json({ error }))
 }
 
-// Modify user information (username, bio, avatar) & return new user information
+// Modify user information (username, bio, avatar) upload avatar & return new user information
 exports.modifyUser = (req, res, next) => {
     const userObject = req.file ?
         {
@@ -95,3 +95,19 @@ exports.modifyUser = (req, res, next) => {
         }))
         .catch(error => res.status(400).json({ error }))
 }
+
+// Delete user account & delete all posts the user has created & return message + check if user is admin
+// exports.deleteUser = (req, res, next) => {
+//     User.findOne({ _id: req.params.id })
+//         .then(user => {
+//             if (user.isAdmin === true) {
+//                 return res.status(401).json({ message: 'Vous ne pouvez pas supprimer un compte administrateur.' })
+//             }
+//             else {
+//                 User.deleteOne({ _id: req.params.id })
+//                     .then(() => res.status(200).json({ message: 'Utilisateur supprimé !' }))
+//                     .catch(error => res.status(400).json({ error }))
+//             }
+//         })
+//         .catch(error => res.status(500).json({ error }))
+// }

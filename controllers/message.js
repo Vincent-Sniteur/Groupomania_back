@@ -67,11 +67,35 @@ exports.getOneMessage = (req, res, next) => {
         .catch(error => res.status(404).json({ error }))
 }
 
-// export function for get all messages
+// TEMPORARY DATA
+const message1 = {
+    _id: '1',
+    userId: '62f200a2b1d6b8a3ef266e48',
+    username: 'Snit - Vincent',
+    date: '2020-12-01T15:00:00.000Z',
+    message: 'Bonjour, je suis un message',
+    image: '',
+    likes: 0,
+    usersLiked: [],
+}
+const message2 = {
+    _id: '2',
+    userId: 'dqsdqsdqsdqsdqsdqsdqs',
+    username: 'Jean - Dupont',
+    date: '2020-12-01T15:00:00.000Z',
+    message: 'un super second message',
+    image: 'https://picsum.photos/300/300',
+    likes: 10,
+    usersLiked: [],
+}
+
+// export function for get all messages & sned onlly if user is auth
 exports.getAllMessages = (req, res, next) => {
-    Message.find()
-        .then(messages => res.status(200).json(messages))
-        .catch(error => res.status(400).json({ error }))
+    // Message.find()
+    //     .then(messages => res.status(200).json(messages))
+    //     .catch(error => res.status(400).json({ error }))
+
+    res.status(200).json([message1, message2])
 }
 
 // export function for like message
