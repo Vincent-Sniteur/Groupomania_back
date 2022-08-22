@@ -78,32 +78,42 @@ exports.login = (req, res, next) => {
 
 // Modify user information (username, bio, avatar) upload avatar & return new user information
 exports.modifyUser = (req, res, next) => {
-    // Transform base64 to image file & save it in images folder
-    const base64Data = req.body.avatar.replace(/^data:([A-Za-z-+/]+);base64,/, '')
-    const type = req.body.avatar.split(';')[0].split('/')[1]
-    const name = "avatar-" + req.params.id + "-" + Math.random().toString(36).substring(7) + "." + type
-    const path = 'images/' + name
-    require('fs').writeFile(path, base64Data, 'base64', function(err) {
-        if (err === null) {
-            console.log("Avatar saved & updated")
-        } else  {
-            console.log(err)
-        }
-    })
 
     // Create new user object with new information
     const username = req.body.username
     const bio = req.body.bio
-    const avatar = `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/${name}`
+    const avatar = req.body.avatar
+    let newAvatar = ""
+
+    // if the avatar is not modified, we keep the old one
+    if (avatar === null) {
+        newAvatar = req.body.oldAvatar
+    }
+    // if the avatar is modified, we upload the new one
+    if (avatar !== null) {
+        const base64Data = avatar.replace(/^data:([A-Za-z-+/]+);base64,/, '')
+        const type = avatar.split(';')[0].split('/')[1]
+        const name = "avatar-" + req.params.id + "-" + Math.random().toString(36).substring(7) + "." + type
+        const path = 'images/' + name
+        require('fs').writeFile(path, base64Data, 'base64', function(err) {
+            if (err === null) {
+                console.log("New Avatar saved by user " + username + " - " + req.params.id)
+            } else  {
+                console.log(err)
+            }
+        })
+        // We save the new avatar path
+        newAvatar = `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/${name}`
+    }
 
     // Update user information & return new user information    
-    User.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id, avatar: avatar })
+    User.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id, avatar: newAvatar })
         .then(() => res.status(200).json(
             {
                 userId : req.params.id,
                 username : username,
                 bio : bio,
-                avatar : avatar,
+                avatar : newAvatar,
             }
         ))
         .catch(error => res.status(400).json({ error }))
