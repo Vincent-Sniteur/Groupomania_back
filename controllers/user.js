@@ -31,8 +31,6 @@ exports.register = (req, res, next) => {
                         numberOfPosts: user.numberOfPosts,
                         numberOfLikes: user.numberOfLikes,
                         numberOfLikesReceived: user.numberOfLikesReceived,
-                        isAdmin: user.isAdmin,
-                        isBanned: user.isBanned,
                         status: user.status,
                         messages: user.messages
                 }))
@@ -67,8 +65,6 @@ exports.login = (req, res, next) => {
                             numberOfPosts: user.numberOfPosts,
                             numberOfLikes: user.numberOfLikes,
                             numberOfLikesReceived: user.numberOfLikesReceived,
-                            isAdmin: user.isAdmin,
-                            isBanned: user.isBanned,
                             status: user.status,
                             messages: user.messages
                     })
@@ -79,35 +75,36 @@ exports.login = (req, res, next) => {
         .catch(error => res.status(500).json({ error }))
 }
 
+
 // Modify user information (username, bio, avatar) upload avatar & return new user information
 exports.modifyUser = (req, res, next) => {
-    const userObject = req.file ?
-        {
-            ...JSON.parse(req.body.user),
-            avatar: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ...req.body }
-    User.updateOne({ _id: req.params.id }, { ...userObject, _id: req.params.id })
-        .then(() => res.status(200).json({ 
-            userId: req.params.id,
-            username: userObject.username,
-            bio: userObject.bio,
-            avatar: userObject.avatar,
-        }))
+    // Transform base64 to image file & save it in images folder
+    const base64Data = req.body.avatar.replace(/^data:([A-Za-z-+/]+);base64,/, '')
+    const type = req.body.avatar.split(';')[0].split('/')[1]
+    const name = "avatar-" + req.params.id + "-" + Math.random().toString(36).substring(7) + "." + type
+    const path = 'images/' + name
+    require('fs').writeFile(path, base64Data, 'base64', function(err) {
+        if (err === null) {
+            console.log("Avatar saved & updated")
+        } else  {
+            console.log(err)
+        }
+    })
+
+    // Create new user object with new information
+    const username = req.body.username
+    const bio = req.body.bio
+    const avatar = `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/${name}`
+
+    // Update user information & return new user information    
+    User.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id, avatar: avatar })
+        .then(() => res.status(200).json(
+            {
+                userId : req.params.id,
+                username : username,
+                bio : bio,
+                avatar : avatar,
+            }
+        ))
         .catch(error => res.status(400).json({ error }))
 }
-
-// Delete user account & delete all posts the user has created & return message + check if user is admin
-// exports.deleteUser = (req, res, next) => {
-//     User.findOne({ _id: req.params.id })
-//         .then(user => {
-//             if (user.isAdmin === true) {
-//                 return res.status(401).json({ message: 'Vous ne pouvez pas supprimer un compte administrateur.' })
-//             }
-//             else {
-//                 User.deleteOne({ _id: req.params.id })
-//                     .then(() => res.status(200).json({ message: 'Utilisateur supprimé !' }))
-//                     .catch(error => res.status(400).json({ error }))
-//             }
-//         })
-//         .catch(error => res.status(500).json({ error }))
-// }

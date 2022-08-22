@@ -1,6 +1,7 @@
 // import Shema from mongoose for message
 const Message = require('../models/message')
 const fs = require('fs')
+const message = require('../models/message')
 
 // export function for create message
 exports.createMessage = (req, res, next) => {
@@ -94,8 +95,13 @@ exports.getAllMessages = (req, res, next) => {
     // Message.find()
     //     .then(messages => res.status(200).json(messages))
     //     .catch(error => res.status(400).json({ error }))
-
-    res.status(200).json([message1, message2])
+    const messages = [message1, message2]
+    const user = {
+        _id: messages._id,
+        userId: messages.userId,
+        username: messages.username
+    }
+    res.status(200).json({posts: messages, users: user})
 }
 
 // export function for like message

@@ -48,8 +48,8 @@ app.use((req, res, next) => {
 
 
 // MIDDLEWARE:
-// Intersect requests that have JSON in the body object & parse it on req.body
-app.use(express.json())
+// Intersect requests that have JSON in the body object & parse it on req.body & Add 3Mb limit for img
+app.use(express.json({limit: '3mb'}))
 
 // Auth user
 // app.use('/', helloWorld)
@@ -60,6 +60,9 @@ app.use('/message', messageRoutes)
 
 // Img folder
 app.use('/images', express.static(path.join(__dirname, 'images')))
+
+// avatar folder
+// app.use('/images/avatar', express.static(path.join(__dirname, 'avatar')))
 
 
 
