@@ -18,7 +18,9 @@ router.post('/register', userCtrl.register)
 // Route for user Login
 router.post('/login', userCtrl.login)
 // Route for modify user
-router.put('/users/:id', auth, multer, userCtrl.modifyUser)
+router.put('/edit-users/:id', auth, multer, userCtrl.modifyUser)
+// Route for get user by id
+// router.get('/users/:id', auth, userCtrl.getOneUser)
 
 // Export router
 module.exports = router

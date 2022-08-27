@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
     isAdmin: { type: Boolean, default: false },
     isBanned: { type: Boolean, default: false },
     status: { type: String, default: 'offline' },
-    messages: { type: Array, default: [] }
 })
 
 // Add unique validator to userSchema

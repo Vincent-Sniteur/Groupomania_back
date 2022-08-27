@@ -41,6 +41,7 @@ exports.createMessage = (req, res, next) => {
                 date: Date.now(),
                 image: imageLink,
             })
+            // todo temporaire
             console.log(messageObject)
             // Save message in database & return message
             messageObject.save()
@@ -70,45 +71,51 @@ exports.deleteMessage = (req, res, next) => {
 // export function for get one message
 exports.getOneMessage = (req, res, next) => {
     Message.findOne({ _id: req.params.id })
-        .then(message => res.status(200).json(message))
+        .then(message => res.status(200).json({
+            posts: message,
+        }))
         .catch(error => res.status(404).json({ error }))
 }
 
-// TEMPORARY DATA
-const message1 = {
-    _id: '1',
-    userId: '62f200a2b1d6b8a3ef266e48',
-    username: 'Snit - Vincent',
-    date: '2020-12-01T15:00:00.000Z',
-    message: 'Bonjour, je suis un message',
-    image: '',
-    likes: 0,
-    usersLiked: [],
-}
-const message2 = {
-    _id: '2',
-    userId: 'dqsdqsdqsdqsdqsdqsdqs',
-    username: 'Jean - Dupont',
-    date: '2020-12-01T15:00:00.000Z',
-    message: 'un super second message',
-    image: 'https://picsum.photos/300/300',
-    likes: 10,
-    usersLiked: [],
+
+// Export function for get all messages & sned onlly if user is auth
+exports.getAllMessages = (req, res, next) => {
+    // Get all messages in database
+    Message.find()
+
+    // For each message get user info & send to frontend
+    .then(messages => {
+        let messagesArray = []
+        messages.forEach(message => {
+            User.findOne({ _id: message.userId })
+                .then(user => {
+                    messagesArray.push({
+                        _id: message._id,
+                        userId: message.userId,
+                        message: message.message,
+                        date: message.date,
+                        image: message.image,
+                        user: {
+                            _id: user._id,
+                            username: user.username,
+                            avatar: user.avatar,
+                            role: user.role,
+                            bio: user.bio,
+                            status: user.status,
+                        },
+                    })
+                    if (messagesArray.length === messages.length) {
+                        res.status(200).json({
+                            posts: messagesArray,
+                        })
+                    }
+                })
+                .catch(error => res.status(404).json({ error }))
+        })
+    })
+    .catch(error => res.status(400).json({ error }))
 }
 
-// export function for get all messages & sned onlly if user is auth
-exports.getAllMessages = (req, res, next) => {
-    // Message.find()
-    //     .then(messages => res.status(200).json(messages))
-    //     .catch(error => res.status(400).json({ error }))
-    const messages = [message1, message2]
-    const user = {
-        _id: messages._id,
-        userId: messages.userId,
-        username: messages.username
-    }
-    res.status(200).json({posts: messages, users: user})
-}
 
 // export function for like message
 exports.likeMessage = (req, res, next) => {
