@@ -94,7 +94,7 @@ exports.modifyUser = (req, res, next) => {
         const base64Data = avatar.replace(/^data:([A-Za-z-+/]+);base64,/, '')
         const type = avatar.split(';')[0].split('/')[1]
         const name = "avatar-" + req.params.id + "-" + Math.random().toString(36).substring(7) + "." + type
-        const path = 'images/' + name
+        const path = 'images/avatars/' + name
         require('fs').writeFile(path, base64Data, 'base64', function(err) {
             if (err === null) {
                 console.log("New Avatar saved by user " + username + " - " + req.params.id)
@@ -103,7 +103,9 @@ exports.modifyUser = (req, res, next) => {
             }
         })
         // We save the new avatar path
-        newAvatar = `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/${name}`
+        newAvatar = `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/avatars/${name}`
+
+        // Delete img from server
     }
 
     // Update user information & return new user information    
@@ -118,3 +120,5 @@ exports.modifyUser = (req, res, next) => {
         ))
         .catch(error => res.status(400).json({ error }))
 }
+
+// Delete user ( & all posts, comments, likes, messages )

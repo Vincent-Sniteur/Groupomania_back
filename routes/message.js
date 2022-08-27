@@ -18,7 +18,7 @@ const router = express.Router()
 router.get('/', auth, messageCtrl.getAllMessages)
 
 // Import function creates message
-router.post('/', auth, multer, messageCtrl.createMessage)
+router.post('/create', auth, multer, messageCtrl.createMessage)
 
 // Import function retrieve 1 message
 router.get('/:id', auth, messageCtrl.getOneMessage)

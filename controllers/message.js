@@ -1,64 +1,71 @@
 // import Shema from mongoose for message
 const Message = require('../models/message')
 const fs = require('fs')
-const message = require('../models/message')
+const User = require('../models/user')
+
 
 // export function for create message
 exports.createMessage = (req, res, next) => {
-    const messageObject = JSON.parse(req.body.message)
-    delete messageObject._id
-    delete messageObeject._userId
-    const Message = new Message({
-        ...messageObject,
-        userId: req.body.userId,
-        username: req.body.username,
-        date: req.body.date,
-        image: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    })
-    message.save()
-        .then(() => res.status(201).json({ message: 'Message enregistré !'}))
-        .catch(error => res.status(400).json({ error}))
+
+    // If image if not empty decrypt base64 & save image in folder images
+    let imageLink = req.body.postImage
+    if(imageLink !== '') {
+        console.log("image not empty")
+        const base64Data = imageLink.replace(/^data:([A-Za-z-+/]+);base64,/, '')
+        const type = imageLink.split(';')[0].split('/')[1]
+        const name = "post-" + req.body.userId + Date.now() + "." + type
+        const path = "images/posts/" + name
+        console.log(name)
+        fs.writeFile(path, base64Data, 'base64', function(err) {
+            if (err === null) {
+                console.log("New Post Img saved by user " + req.body.userId)
+            } else  {
+                console.log(err)
+            }
+        })
+
+        imageLink = `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/posts/${name}`
+
+    }
+
+    // Check if userId is valid & return user info to send to frontend & save the message
+    User.findOne({ _id: req.body.userId })
+        .then(user => {
+            if (!user) {
+                return res.status(401).json({ error: 'Error User not found' })
+            }
+            // Create message
+            const messageObject = new Message({
+                userId: user._id,
+                username: user.username,
+                message: req.body.postMessage,
+                date: Date.now(),
+                image: imageLink,
+            })
+            console.log(messageObject)
+            // Save message in database & return message
+            messageObject.save()
+                .then(() => res.status(201).json({ messageObject }))
+                .catch(error => res.status(400).json({ error }))
+        })
+        .catch(error => res.status(500).json({ error }))
+}
+
+
+
+
+
+
+// export function for modify message
+exports.modifyMessage = (req, res, next) => {
+    console.log(req.body)
+    console.log(req.body.userId)
 }
 
 // export function for delete message
 exports.deleteMessage = (req, res, next) => {
-    Message.findOne({ _id: req.params.id })
-        .then(message => {
-            if (message.userId.toString() !== req.auth.userId) {
-                return res.status(403).json({ error: 'Unauthorized request' })
-            }
-            else {
-                const filename = message.image.split('/images/')[1]
-                fs.unlink(`images/${filename}`, () => {
-                    Message.deleteOne({ _id: req.params.id })
-                        .then(() => res.status(200).json({ message: 'Message supprimé !' }))
-                        .catch(error => res.status(401).json({ error }))
-                })
-            }
-        })
-        .catch(error => res.status(404).json({ error }))
-}
-
-// export function for modify message
-exports.modifyMessage = (req, res, next) => {
-    const messageObject = req.file ? {
-            ...JSON.parse(req.body.message),
-            image: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ...req.body }
-
-        delete messageObject._userId // Protect injection of userId
-        Message.findOne({ _id: req.params.id })
-            .then(message => {
-                if (message.userId.toString() !== req.auth.userId) {
-                    return res.status(403).json({ error: 'Unauthorized request' })
-                }
-                else {
-                    Message.updateOne({ _id: req.params.id }, { ...messageObject, _id: req.params.id })
-                        .then(() => res.status(200).json({ message: 'Message modifié !' }))
-                        .catch(error => res.status(400).json({ error }))
-                }
-            })
-            .catch(error => res.status(404).json({ error }))
+    console.log(req.body)
+    console.log(req.body.userId)
 }
 
 // export function for get one message
