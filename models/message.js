@@ -4,7 +4,6 @@ const mongoose = require('mongoose')
 // Shema user
 const messageSchema = new mongoose.Schema({
     userId: { type: String, required: true },
-    username: { type: String, required: true },
     message: { type: String, required: true },
     date: { type: String, required: true },
     image: { type: String, default: '' },

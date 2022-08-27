@@ -37,7 +37,6 @@ exports.createMessage = (req, res, next) => {
             // Create message
             const messageObject = new Message({
                 userId: user._id,
-                username: user.username,
                 message: req.body.postMessage,
                 date: Date.now(),
                 image: imageLink,
