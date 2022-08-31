@@ -38,7 +38,7 @@ exports.createMessage = (req, res, next) => {
             const messageObject = new Message({
                 userId: user._id,
                 message: req.body.postMessage,
-                date: Date.now(),
+                date: new Date(),
                 image: imageLink,
             })
             // todo temporaire
@@ -52,20 +52,39 @@ exports.createMessage = (req, res, next) => {
 }
 
 
-
-
-
-
 // export function for modify message
 exports.modifyMessage = (req, res, next) => {
     console.log(req.body)
     console.log(req.body.userId)
 }
 
-// export function for delete message
+// Export function for delete message
 exports.deleteMessage = (req, res, next) => {
     console.log(req.body)
-    console.log(req.body.userId)
+
+    Message.findOne({ _id: req.params.id })
+        .then(message => {
+            if (!message) {
+                return res.status(401).json({ error: 'Error Message not found' })
+            }
+            // Delete image if exist
+            if (message.image !== '') {
+                const name = message.image.split('/')[message.image.split('/').length - 1]
+                const path = "images/posts/" + name
+                fs.unlink(path, function(err) {
+                    if (err === null) {
+                        console.log("Post Img deleted by user " + req.body.userId)
+                    } else  {
+                        console.log(err)
+                    }
+                })
+            }
+            // Delete message in database & return message
+            Message.deleteOne({ _id: req.params.id })
+                .then(() => res.status(201))
+                .catch(error => res.status(400).json({ error }))
+        })
+        .catch(error => res.status(500).json({ error }))
 }
 
 // export function for get one message
@@ -87,6 +106,7 @@ exports.getAllMessages = (req, res, next) => {
     .then(messages => {
         let messagesArray = []
         messages.forEach(message => {
+            // Get user info & return
             User.findOne({ _id: message.userId })
                 .then(user => {
                     messagesArray.push({
