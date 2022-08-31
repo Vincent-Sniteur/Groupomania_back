@@ -59,8 +59,20 @@ exports.createMessage = (req, res, next) => {
 
 // export function for modify message
 exports.modifyMessage = (req, res, next) => {
-    console.log(req.body)
-    console.log(req.body.userId)
+    console.log(req.body.message)
+    console.log(req.body.id)
+
+    Message.findOne({ _id: req.body.id })
+        .then(message => {
+            if (!message) {
+                return res.status(401).json({ error: 'Error Message not found' })
+            }
+            message.message = req.body.message
+            message.save()
+                .then(() => res.status(201).json({ message }))
+                .catch(error => res.status(400).json({ error }))
+        })
+        .catch(error => res.status(500).json({ error }))
 }
 
 // Export function for delete message
