@@ -7,6 +7,11 @@ const User = require('../models/user')
 // export function for create message
 exports.createMessage = (req, res, next) => {
 
+    // If no message in request ( post only image )
+    if (req.body.postMessage === "") {
+        req.body.postMessage = " "
+    }
+
     // If image if not empty decrypt base64 & save image in folder images
     let imageLink = req.body.postImage
     if(imageLink !== '') {
@@ -61,7 +66,7 @@ exports.modifyMessage = (req, res, next) => {
 // Export function for delete message
 exports.deleteMessage = (req, res, next) => {
 
-    Message.findOne({ _id: req.params.id, userId: req.body.userId })
+    Message.findOne({ _id: req.params.id })
         .then(message => {
             if (!message) {
                 return res.status(401).json({ error: 'Error Message not found' })
@@ -80,7 +85,7 @@ exports.deleteMessage = (req, res, next) => {
             }
             // Delete message in database & return message
             Message.deleteOne({ _id: req.params.id })
-                .then(() => res.status(201))
+                .then(() => res.status(201).json({ message }))
                 .catch(error => res.status(400).json({ error }))
         })
         .catch(error => res.status(500).json({ error }))
