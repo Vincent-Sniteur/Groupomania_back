@@ -60,9 +60,8 @@ exports.modifyMessage = (req, res, next) => {
 
 // Export function for delete message
 exports.deleteMessage = (req, res, next) => {
-    console.log(req.body)
 
-    Message.findOne({ _id: req.params.id })
+    Message.findOne({ _id: req.params.id, userId: req.body.userId })
         .then(message => {
             if (!message) {
                 return res.status(401).json({ error: 'Error Message not found' })

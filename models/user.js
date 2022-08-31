@@ -16,8 +16,6 @@ const userSchema = new mongoose.Schema({
     numberOfPosts: { type: Number, default: 0 },
     numberOfLikes: { type: Number, default: 0 },
     numberOfLikesReceived: { type: Number, default: 0 },
-    isAdmin: { type: Boolean, default: false },
-    isBanned: { type: Boolean, default: false },
     status: { type: String, default: 'offline' },
 })
 
