@@ -155,55 +155,29 @@ exports.getAllMessages = (req, res, next) => {
 }
 
 
-// export function for like message
+// Export system like & dislike object
 exports.likeMessage = (req, res, next) => {
+    const like = req.body.likes
+    const idMessage = req.params.id
+    const idUser = req.body.userId
 
-    console.log(req.body.id)
-    // const like = req.body.like
-    // const idMessage = req.params.id
-    
-    // Message.findOne({ _id: idMessage })
-
-    // .then (message => {
-    //     // Check If user already like the message
-    //     const includesId = !message.usersLiked.includes(req.body.userId) && !message.usersDisliked.includes(req.body.userId)
-
-    //     // Like the message if user not already liked or disliked return 1 & add userId to usersLiked increment by 1 like
-    //     if( like === 1 && includesId ) {
-    //         // Push userId in usersLiked array & increment likes
-    //         Message.updateOne({_id:idMessage}, {$push: {usersLiked: req.body.userId}, $inc: {likes: +1}})
-
-    //         .then(() => res.status(200).json({ message: 'Like added'}))
-    //         .catch(error => res.status(400).json({ error }))
-    //     }
-
-    //     // Dislike message if user not already liked or disliked return -1 & add userId to usersdisLiked increment by 1 dislike
-    //     else if( like === -1 && includesId ) {
-    //         // Push userId in usersDisliked array & increment dislikes
-    //         Message.updateOne({_id:idMessage}, {$push: {usersDisliked: req.body.userId}, $inc: {dislikes: +1}})
-
-    //         .then(() => res.status(200).json({ message: 'Dislike added'}))
-    //         .catch(error => res.status(400).json({ error }))
-    //     }
-
-    //     // Delete like already exist & decrement likes & delete userId from usersLiked
-    //     else {
-    //         if(message.usersLiked.includes(req.body.userId)) {
-    //         // Remove userId from usersLiked array & decrement likes
-    //             Message.updateOne({_id:idMessage}, {$pull: {usersLiked: req.body.userId}, $inc: {likes: -1}})
-
-    //             .then(() => res.status(200).json({ message: 'Like remote'}))
-    //             .catch(error => res.status(400).json({ error }))
-    //         }
-    //     // Delete dislike already exist & decrement dislikes & delete userId from usersDisliked
-    //         else if(message.usersDisliked.includes(req.body.userId)) {
-    //         // Remove userId from usersDisliked array & decrement dislikes
-    //             Message.updateOne({_id:idMessage}, {$pull: {usersDisliked: req.body.userId}, $inc: {dislikes: -1}})
-
-    //             .then(() => res.status(200).json({ message: 'Dislike remote'}))
-    //             .catch(error => res.status(400).json({ error }))
-    //         }
-    //     }
-    // })
-    // .catch(error => res.status(400).json({ error }))
+    Message.findOne({ _id: idMessage })
+        .then(message => {
+            if (!message) {
+                return res.status(401).json({ error: 'Error Message not found' })
+            }
+            // if user already like message remove like & remove user in array usersLiked
+            if (message.usersLiked.includes(idUser)) {
+                message.likes = message.likes - 1
+                message.usersLiked = message.usersLiked.filter(user => user !== idUser)
+            } else {
+                // if user not like message add like & add user in array usersLiked
+                message.likes = message.likes + 1
+                message.usersLiked.push(idUser)
+            }
+            message.save()
+                .then(() => res.status(201).json({ message }))
+                .catch(error => res.status(400).json({ error }))
+        })
+        .catch(error => res.status(500).json({ error }))
 }
