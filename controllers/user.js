@@ -7,6 +7,9 @@ const User = require('../models/user')
 // Import jwt for auth token generation & verification
 const jwt = require('jsonwebtoken')
 
+const fs = require('fs')
+const user = require('../models/user')
+
 
 // Singnup export (create user + hash password)
 exports.register = (req, res, next) => {
@@ -76,7 +79,6 @@ exports.login = (req, res, next) => {
 
 // Modify user information (username, bio, avatar) upload avatar & return new user information
 exports.modifyUser = (req, res, next) => {
-
     // Create new user object with new information
     const username = req.body.username
     const bio = req.body.bio
@@ -93,7 +95,7 @@ exports.modifyUser = (req, res, next) => {
         const type = avatar.split(';')[0].split('/')[1]
         const name = "avatar-" + req.params.id + "-" + Math.random().toString(36).substring(7) + "." + type
         const path = 'images/avatars/' + name
-        require('fs').writeFile(path, base64Data, 'base64', function(err) {
+        fs.writeFile(path, base64Data, 'base64', function(err) {
             if (err === null) {
                 console.log("New Avatar saved by user " + username + " - " + req.params.id)
             } else  {
@@ -103,7 +105,21 @@ exports.modifyUser = (req, res, next) => {
         // We save the new avatar path
         newAvatar = `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/avatars/${name}`
 
-        // Delete img from server
+        // Delete old avatar if not default avatar replaced by new avatar
+        if (req.body.oldAvatar !== null && req.body.oldAvatar !== `${process.env.PROTOCOL}://${process.env.SERVER_URL}:${process.env.PORT}/images/profil.png`) {
+            User.findOne({ _id: req.params.id })
+                .then(user => {
+                    if (user.avatar !== null) {
+                        const oldAvatar = user.avatar.split('/')
+                        fs.unlink('images/avatars/' + oldAvatar[oldAvatar.length - 1], (err) => {
+                            if (err) {
+                                console.log(err)
+                            }
+                        })
+                    }
+                })
+                .catch(error => res.status(500).json({ error }))
+        }
     }
 
     // Update user information & return new user information    
@@ -118,17 +134,3 @@ exports.modifyUser = (req, res, next) => {
         ))
         .catch(error => res.status(400).json({ error }))
 }
-
-// Get one user information ( Futur use for admin or user profile )
-// exports.getOneUser = (req, res, next) => {
-//     User.findOne({ _id: req.params.id })
-//         .then(user => res.status(200).json({
-//             userId : user._id,
-//             username : user.username,
-//             role : user.role,
-//             bio : user.bio,
-//             avatar : user.avatar,
-//             status : user.status,
-//         }))
-//         .catch(error => res.status(404).json({ error }))
-// }
