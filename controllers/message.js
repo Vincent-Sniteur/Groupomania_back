@@ -5,7 +5,7 @@ const User = require('../models/user')
 
 
 // export function for create message
-exports.createMessage = (req, res, next) => {
+exports.createMessage = (req, res) => {
 
     // If no message in request ( post only image )
     if (req.body.postMessage === "") {
@@ -58,7 +58,7 @@ exports.createMessage = (req, res, next) => {
 
 
 // export function for modify message
-exports.modifyMessage = (req, res, next) => {
+exports.modifyMessage = (req, res) => {
     console.log(req.body.message)
     console.log(req.body.id)
 
@@ -76,7 +76,7 @@ exports.modifyMessage = (req, res, next) => {
 }
 
 // Export function for delete message
-exports.deleteMessage = (req, res, next) => {
+exports.deleteMessage = (req, res) => {
 
     Message.findOne({ _id: req.params.id })
         .then(message => {
@@ -104,7 +104,7 @@ exports.deleteMessage = (req, res, next) => {
 }
 
 // export function for get one message
-exports.getOneMessage = (req, res, next) => {
+exports.getOneMessage = (req, res) => {
     Message.findOne({ _id: req.params.id })
         .then(message => res.status(200).json({
             posts: message,
@@ -114,7 +114,7 @@ exports.getOneMessage = (req, res, next) => {
 
 
 // Export function for get all messages & sned onlly if user is auth
-exports.getAllMessages = (req, res, next) => {
+exports.getAllMessages = (req, res) => {
     // Get all messages in database
     Message.find()
 
@@ -161,7 +161,7 @@ exports.getAllMessages = (req, res, next) => {
 
 
 // Export system like & dislike object
-exports.likeMessage = (req, res, next) => {
+exports.likeMessage = (req, res) => {
     const idMessage = req.params.id
     const idUser = req.body.userId
 
