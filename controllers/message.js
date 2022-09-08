@@ -83,7 +83,7 @@ exports.deleteMessage = (req, res, next) => {
             if (!message) {
                 return res.status(401).json({ error: 'Error Message not found' })
             }
-            // Delete image if exist
+            // Delete image if already exist
             if (message.image !== '') {
                 const name = message.image.split('/')[message.image.split('/').length - 1]
                 const path = "images/posts/" + name
@@ -120,6 +120,11 @@ exports.getAllMessages = (req, res, next) => {
 
     // For each message get user info & send to frontend
     .then(messages => {
+        // If no messages in database return No Content status
+        if (messages.length === 0) {
+            return res.status(204).json({ error: 'No content' })
+        }
+
         let messagesArray = []
         messages.forEach(message => {
             // Get user info & return
@@ -157,7 +162,6 @@ exports.getAllMessages = (req, res, next) => {
 
 // Export system like & dislike object
 exports.likeMessage = (req, res, next) => {
-    const like = req.body.likes
     const idMessage = req.params.id
     const idUser = req.body.userId
 
