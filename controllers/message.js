@@ -46,8 +46,6 @@ exports.createMessage = (req, res) => {
                 date: new Date(),
                 image: imageLink,
             })
-            // todo temporaire
-            console.log(messageObject)
             // Save message in database & return message
             messageObject.save()
                 .then(() => res.status(201).json({ messageObject }))

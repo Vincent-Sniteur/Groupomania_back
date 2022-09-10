@@ -61,10 +61,6 @@ app.use('/message', messageRoutes)
 // Img folder
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
-// avatar folder
-// app.use('/images/avatar', express.static(path.join(__dirname, 'avatar')))
-
-
 
 // EXPORT:
 // Export app for server.js

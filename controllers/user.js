@@ -7,7 +7,10 @@ const User = require('../models/user')
 // Import jwt for auth token generation & verification
 const jwt = require('jsonwebtoken')
 
+// Import FS - file system
 const fs = require('fs')
+
+// Import Model User
 const user = require('../models/user')
 
 
