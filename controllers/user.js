@@ -22,6 +22,8 @@ exports.register = (req, res, next) => {
                 email: req.body.email,
                 password: hash
             })
+            // Log - New user created
+            console.log('User successfully created: ' + user.username + ' - ' + user.email + ' - ' + user._id)
             user.save() // Save user in database
                 .then(() => res.status(201).json({
                     message: 'Utilisateur créé !',
@@ -72,6 +74,8 @@ exports.login = (req, res, next) => {
                             numberOfLikesReceived: user.numberOfLikesReceived,
                             status: user.status,
                     })
+                    // Log - User logged
+                    console.log('User successfully logged in: ' + user.username + ' - ' + user.email + ' - ' + user._id)
                 })
                 .catch(error => res.status(500).json({ error }))
         }
@@ -82,6 +86,9 @@ exports.login = (req, res, next) => {
 
 // Modify user information (username, bio, avatar) upload avatar & return new user information
 exports.modifyUser = (req, res, next) => {
+    // Log - Modify user information
+    console.log('Modify user information: ' + req.body.username + ' - ' + req.body.bio + ' - ' + req.body.avatar)
+
     // Create new user object with new information
     const username = req.body.username
     const bio = req.body.bio
@@ -100,7 +107,7 @@ exports.modifyUser = (req, res, next) => {
         const path = 'images/avatars/' + name
         fs.writeFile(path, base64Data, 'base64', function(err) {
             if (err === null) {
-                console.log("New Avatar saved by user " + username + " - " + req.params.id)
+                console.log("New Avatar saved by user: " + username + " - " + req.params.id)
             } else  {
                 console.log(err)
             }

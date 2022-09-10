@@ -6,6 +6,8 @@ const User = require('../models/user')
 
 // export function for create message
 exports.createMessage = (req, res) => {
+    // Log - Message & User ID
+    console.log("New message from user: " + req.body.userId + " / " + req.body.postMessage)
 
     // If no message in request ( post only image )
     if (req.body.postMessage === "") {
@@ -15,15 +17,13 @@ exports.createMessage = (req, res) => {
     // If image if not empty decrypt base64 & save image in folder images
     let imageLink = req.body.postImage
     if(imageLink !== '') {
-        console.log("image not empty")
         const base64Data = imageLink.replace(/^data:([A-Za-z-+/]+);base64,/, '')
         const type = imageLink.split(';')[0].split('/')[1]
         const name = "post-" + req.body.userId + Date.now() + "." + type
         const path = "images/posts/" + name
-        console.log(name)
         fs.writeFile(path, base64Data, 'base64', function(err) {
             if (err === null) {
-                console.log("New Post Img saved by user " + req.body.userId)
+                console.log("New Image saved by user: " + req.body.userId)
             } else  {
                 console.log(err)
             }
@@ -57,8 +57,8 @@ exports.createMessage = (req, res) => {
 
 // export function for modify message
 exports.modifyMessage = (req, res) => {
-    console.log(req.body.message)
-    console.log(req.body.id)
+    // Log - Message ID by user
+    console.log("Message number: " + req.params.id + " Modified in: " + req.body.message)
 
     Message.findOne({ _id: req.body.id })
         .then(message => {
@@ -75,6 +75,8 @@ exports.modifyMessage = (req, res) => {
 
 // Export function for delete message
 exports.deleteMessage = (req, res) => {
+    // Log - Message ID by user
+    console.log("Message number: " + req.params.id + "have been deleted")
 
     Message.findOne({ _id: req.params.id })
         .then(message => {
@@ -87,7 +89,7 @@ exports.deleteMessage = (req, res) => {
                 const path = "images/posts/" + name
                 fs.unlink(path, function(err) {
                     if (err === null) {
-                        console.log("Post Img deleted by user " + req.body.userId)
+                        console.log("Post Img deleted by user: " + req.body.userId)
                     } else  {
                         console.log(err)
                     }
