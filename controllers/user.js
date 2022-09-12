@@ -87,7 +87,7 @@ exports.login = (req, res, next) => {
 // Modify user information (username, bio, avatar) upload avatar & return new user information
 exports.modifyUser = (req, res, next) => {
     // Log - Modify user information
-    console.log('Modify user information: ' + req.body.username + ' - ' + req.body.bio + ' - ' + req.body.avatar)
+    console.log('Modify user information: ' + req.body.username + ' - ' + req.body.bio)
 
     // Create new user object with new information
     const username = req.body.username
