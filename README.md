@@ -11,15 +11,15 @@
 * Create an .env file in the source folder
 * Add in this file the list of information below and saved with your configuration
 
-SECRET_DB="Here your MongoDB codes for the database"
+SECRET_DB=Here your MongoDB codes for the database
 
-JWT_TOKEN="UnTokenSuper"
+JWT_TOKEN=UnTokenSupe
 
-PORT="3000"
+PORT=3000
 
-SERVER_URL="localhost"
+SERVER_URL=localhost
 
-PROTOCOL="http"
+PROTOCOL=http
 
 
 
